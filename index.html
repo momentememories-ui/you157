@@ -10,31 +10,32 @@
             margin: 0; padding: 0;
             width: 100vw; height: 100vh;
             overflow: hidden;
-            /* ล็อกการดึงขยับหน้าจอสำหรับเบราว์เซอร์มือถือ */
             overscroll-behavior: none;
             touch-action: none;
+            
+            /* ป้องกันแถบสีฟ้าบน Android และการคัดลอก */
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+            user-select: none;
         }
 
         body {
-            /* แก้ไข: ล็อกพื้นหลังแน่นหนา ห้ามขยับ 100% */
             background: url('photo11.jpg') no-repeat center center fixed;
             background-size: cover;
             font-family: 'Prompt', sans-serif;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
-            user-select: none;
             position: relative;
         }
 
         .butterfly {
             position: fixed; 
-            bottom: -50px; /* เริ่มต้นจากด้านล่างสุดนอกหน้าจอ ไม่ค้างตรงกลาง */
+            bottom: -50px;
             pointer-events: none; 
             z-index: 1; 
             font-size: 24px;
             animation: flying 10s linear infinite;
         }
 
-        /* แก้ไข: อนิเมชันอิโมจิให้ลอยจากล่างสุดขึ้นไปบนสุดทันที */
         @keyframes flying {
             0% { 
                 transform: translateY(0) translateX(0) rotate(0deg); 
@@ -69,6 +70,7 @@
             max-width: 100%; max-height: 100%;
             object-fit: contain;
             transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            -webkit-tap-highlight-color: transparent;
         }
 
         @keyframes bouquetWobble {
@@ -89,6 +91,7 @@
             width: 80px; height: auto;
             cursor: pointer; z-index: 15; opacity: 0;
             transition: all 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+            -webkit-tap-highlight-color: transparent;
         }
         #nong-img.show { 
             opacity: 1;
@@ -112,6 +115,7 @@
             cursor: pointer; pointer-events: auto;
             object-fit: cover;
             border-radius: 4px;
+            -webkit-tap-highlight-color: transparent;
         }
 
         #photo-viewer {
@@ -132,7 +136,10 @@
         .view-card img { width: 100%; height: auto; display: block; margin-bottom: 12px; border-radius: 2px; }
         .view-caption { text-align: center; color: #444; font-size: 0.85rem; font-weight: 600; white-space: pre-line; }
 
-        #touch-area { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 6; cursor: pointer; }
+        #touch-area { 
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 6; cursor: pointer; 
+            -webkit-tap-highlight-color: transparent;
+        }
         #watering-can-img { position: fixed; width: 80px; height: 80px; pointer-events: none; display: none; z-index: 100; transform: rotate(-20deg); }
 
         #box-btn {
@@ -142,6 +149,7 @@
             transform: translate(-50%, -50%) scale(0);
             transition: all 1s cubic-bezier(0.175, 0.885, 0.32, 1.275), left 1s, top 1s;
             display: none;
+            -webkit-tap-highlight-color: transparent;
         }
 
         #overlay {
@@ -184,6 +192,7 @@
             box-shadow: 0 3px 8px rgba(0,0,0,0.3);
             z-index: 410;
             transition: transform 0.2s ease, background 0.2s ease;
+            -webkit-tap-highlight-color: transparent;
         }
         .close-btn:hover {
             background: #ff1744;
@@ -209,14 +218,14 @@
     <h1 id="status-text">ที่รักช่วยเขารดน้ำให้ต้นไม้ต้นนี้หน่อยนะ🌱</h1>
 
     <div id="plant-container">
-        <img id="main-plant-img" src="stage1.png">
-        <img id="nong-img" src="nong.png">
+        <img id="main-plant-img" src="stage1.png" onerror="this.onerror=null; this.src='https://via.placeholder.com/280x380?text=Plant+Stage+1';">
+        <img id="nong-img" src="nong.png" onerror="this.onerror=null; this.src='https://via.placeholder.com/80?text=Nong';">
     </div>
 
     <div id="touch-area"></div>
-    <img id="watering-can-img" src="water-can.png">
+    <img id="watering-can-img" src="water-can.png" onerror="this.onerror=null; this.src='https://via.placeholder.com/80?text=WaterCan';">
 
-    <img id="box-btn" src="box.png" onclick="openNote(this)">
+    <img id="box-btn" src="box.png" onclick="openNote(this)" onerror="this.onerror=null; this.src='https://via.placeholder.com/85?text=Box';">
 
     <div id="photo-viewer" onclick="closePhoto()">
         <div id="active-view-card" class="view-card" onclick="event.stopPropagation()">
@@ -229,7 +238,7 @@
     <div id="overlay" onclick="closeNote()">
         <div id="note-container" onclick="event.stopPropagation()">
             <div class="close-btn" onclick="closeNote()">✕</div>
-            <img id="note-img-display" src="note.png">
+            <img id="note-img-display" src="note.png" onerror="this.onerror=null; this.src='https://via.placeholder.com/350x500?text=Note+Missing';">
         </div>
     </div>
 
@@ -245,7 +254,6 @@
             }, { once: true });
         });
 
-        // สร้างอิโมจิให้ทยอยปล่อยขึ้นมาจากขอบล่างสุด
         function createButterflies() {
             const emojis = ['🩵', '🌻'];
             for(let i=0; i<12; i++) {
@@ -331,6 +339,10 @@
         nongImg.onclick = () => {
             if (!isBouquetStage) {
                 plantImg.style.transform = "scale(0.3)"; 
+                
+                plantImg.onerror = function() {
+                    this.src = 'https://via.placeholder.com/280x380?text=Bouquet+Missing';
+                };
                 plantImg.src = 'bouquet.png'; 
                 
                 setTimeout(() => {
@@ -375,7 +387,7 @@
                 const img = document.createElement('img');
                 img.src = `photo${i+1}.jpg`;
                 img.className = 'memory-seed';
-                img.onerror = function() { this.src = 'https://via.placeholder.com/60'; };
+                img.onerror = function() { this.src = 'https://via.placeholder.com/60?text=Photo'; };
                 img.onclick = (e) => { e.stopPropagation(); showPhoto(img, img.src, captions[i]); };
                 document.body.appendChild(img);
                 
