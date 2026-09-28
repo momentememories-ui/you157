@@ -6,29 +6,50 @@
     <title>To you💗</title>
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;600&display=swap" rel="stylesheet">
     <style>
-        body {
+        html, body {
             margin: 0; padding: 0;
-            /* แก้ไข: เปลี่ยนเป็นไฟล์ photo11.jpg และล็อกห้ามขยับ */
+            width: 100vw; height: 100vh;
+            overflow: hidden;
+            /* ล็อกการดึงขยับหน้าจอสำหรับเบราว์เซอร์มือถือ */
+            overscroll-behavior: none;
+            touch-action: none;
+        }
+
+        body {
+            /* แก้ไข: ล็อกพื้นหลังแน่นหนา ห้ามขยับ 100% */
             background: url('photo11.jpg') no-repeat center center fixed;
             background-size: cover;
             font-family: 'Prompt', sans-serif;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
-            height: 100vh; overflow: hidden;
-            touch-action: manipulation;
             user-select: none;
             position: relative;
         }
 
         .butterfly {
-            position: absolute; width: 20px; height: 20px;
-            pointer-events: none; z-index: 1; font-size: 20px;
-            animation: flying 12s linear infinite;
+            position: fixed; 
+            bottom: -50px; /* เริ่มต้นจากด้านล่างสุดนอกหน้าจอ ไม่ค้างตรงกลาง */
+            pointer-events: none; 
+            z-index: 1; 
+            font-size: 24px;
+            animation: flying 10s linear infinite;
         }
+
+        /* แก้ไข: อนิเมชันอิโมจิให้ลอยจากล่างสุดขึ้นไปบนสุดทันที */
         @keyframes flying {
-            0% { transform: translate(0, 0) rotate(0deg); opacity: 0; }
-            10% { opacity: 1; }
-            90% { opacity: 1; }
-            100% { transform: translate(400px, -500px) rotate(360deg); opacity: 0; }
+            0% { 
+                transform: translateY(0) translateX(0) rotate(0deg); 
+                opacity: 0; 
+            }
+            10% { 
+                opacity: 1; 
+            }
+            90% { 
+                opacity: 1; 
+            }
+            100% { 
+                transform: translateY(-115vh) translateX(var(--x-drift)) rotate(360deg); 
+                opacity: 0; 
+            }
         }
 
         #status-text { 
@@ -50,7 +71,6 @@
             transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        /* เพิ่มเติม: อนิเมชันสำหรับสั่นช่อดอกไม้เพื่อดึงดูดสายตา */
         @keyframes bouquetWobble {
             0% { transform: scale(1.15) rotate(0deg); }
             25% { transform: scale(1.18) rotate(-3deg); }
@@ -146,7 +166,6 @@
             display: block;
         }
 
-        /* ปุ่มปิด (✕) สำหรับป๊อปอัป */
         .close-btn {
             position: absolute;
             top: -12px;
@@ -218,7 +237,7 @@
         window.addEventListener('DOMContentLoaded', () => {
             const music = document.getElementById('bg-music');
             music.play().catch(e => {
-                console.log("Autoplay บล็อกชั่วคราว รอการสัมผัสแรกจากผู้ใช้เพื่อความปลอดภัยของระบบเสียงเบราว์เซอร์");
+                console.log("Autoplay บล็อกชั่วคราว รอการสัมผัสแรกจากผู้ใช้");
             });
             
             document.body.addEventListener('pointerdown', () => {
@@ -226,15 +245,16 @@
             }, { once: true });
         });
 
+        // สร้างอิโมจิให้ทยอยปล่อยขึ้นมาจากขอบล่างสุด
         function createButterflies() {
             const emojis = ['💗', '🌻'];
             for(let i=0; i<12; i++) {
                 const b = document.createElement('div');
                 b.className = 'butterfly';
                 b.innerHTML = emojis[Math.floor(Math.random() * emojis.length)];
-                b.style.left = Math.random() * 90 + 'vw';
-                b.style.top = Math.random() * 90 + 'vh';
-                b.style.animationDelay = Math.random() * 5 + 's';
+                b.style.left = (Math.random() * 80 + 10) + 'vw';
+                b.style.setProperty('--x-drift', ((Math.random() - 0.5) * 200) + 'px');
+                b.style.animationDelay = (Math.random() * 8) + 's';
                 document.body.appendChild(b);
             }
         }
@@ -314,7 +334,6 @@
                 plantImg.src = 'bouquet.png'; 
                 
                 setTimeout(() => {
-                    /* เพิ่ม Class wobble-active เพื่อให้ช่อดอกไม้สั่นดึงดูดสายตา */
                     plantImg.classList.add('wobble-active');
                 }, 50);
 
@@ -327,7 +346,6 @@
                     plantImg.style.cursor = 'pointer';
                     plantImg.onclick = () => {
                         bgMusic.play().catch(e => console.log("Music play blocked"));
-                        /* พอกดคลิกแล้ว ให้ช่อดอกไม้หยุดสั่นทันที */
                         plantImg.classList.remove('wobble-active');
                         plantImg.style.transform = "scale(1.15) rotate(0deg)";
                         explode();
@@ -366,8 +384,6 @@
                 const jitterY = (Math.random() - 0.5) * 15;
                 const finalX = pos.x + jitterX;
                 const finalY = pos.y + jitterY;
-                
-                /* บังคับค่าสุ่มเอียงเล็กน้อยตอนกระจายตัวออกมา (สุ่มมุมเอียงระหว่าง -15 ถึง +15 องศา) */
                 const rotate = (Math.random() - 0.5) * 30;
 
                 setTimeout(() => {
